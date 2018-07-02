@@ -61,7 +61,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      jspOption:'<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@include file="params.jsp"%>',
+      // jspOption:'<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@include file="params.jsp"%>',
       // jspOption:'<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>',
       filename: config.build.index,
       assetsPublicPath:config.build.assetsPublicPath,

@@ -33,36 +33,6 @@ normalHttp.interceptors.response.use((response) => {
   return Promise.reject(err)
 })
 
-// 沟通Http
-let httpChat = axios.create({})
-
-// let exclude = ['interface/getSysUser', 'interface/getResourceFile']
-
-httpChat.defaults.baseURL = process.env.chatServicePath
-httpChat.defaults.headers.post['Content-Type'] = 'application/json'
-httpChat.defaults.timeout = 10000
-
-httpChat.interceptors.request.use((config) => {
-  requestAspect(config)
-  return config
-})
-
-httpChat.interceptors.response.use((response) => {
-  responseAspect(response)
-  // if (response.data.errorCode === '0' || response.data.errorCode === '200001') {
-  return response.data
-  // } else {
-  //   Toast({
-  //     message: `出错啦，请重试！(code:${response.data.errorCode}   desc:${response.data.errorMsg} )`,
-  //     iconClass: 'fa fa-times'
-  //   })
-  //   return response
-  // }
-}, (err) => { // 这里是返回状态码不为200时候的错误处理
-  errorHandle(err)
-  return Promise.reject(err)
-})
-
 // 文件服务
 let fileHttp = axios.create({})
 
@@ -176,7 +146,6 @@ function errorHandle (err) {
 }
 
 Vue.prototype.$http = normalHttp
-Vue.prototype.$httpChat = httpChat
 Vue.prototype.$httpFile = fileHttp
 Vue.prototype.$httpWx = http
 
