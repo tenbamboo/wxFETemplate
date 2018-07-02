@@ -7,7 +7,7 @@
     <a @click="gotoPage('/demo/muiltPicker')">多选Picker</a>
     <a @click="gotoPage('/demo/datePicker')">日期Picker</a>
     <a @click="gotoPage('/demo/callPhone')">打电话</a>
-    <a>Cain API(待补全)</a>
+    <a>Cain API(待补全 )</a>
 
   </div>
 </template>
