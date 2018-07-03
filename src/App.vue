@@ -29,9 +29,22 @@ export default {
   created () {
   },
   mounted () {
+    // this.initWatchJkx()
     this.hideOverlay()
   },
   methods: {
+    initWatchJkx () {
+      // Object.defineProperties(jkx, {
+      //   openid: {
+      //     get () {
+
+      //     },
+      //     set (newValue) {
+      //       this.hideOverlay()
+      //     }
+      //   }
+      // })
+    },
     hideOverlay () {
       let overlay = document.getElementById('rootOverlay')
       overlay.classList.add('hiddenReady')

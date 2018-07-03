@@ -12,10 +12,6 @@ import CainUICommon from '@/components/cain/CainUICommon'
 
 Vue.prototype.$_ = _
 
-if (process.env.NODE_ENV === 'development') {
-  sessionStorage.setItem('openId', 'ozbuFuGhwAVyX0RzKZjIsEr_LjDw')
-}
-
 resource.init()
 
 Vue.use(CainUICommon)

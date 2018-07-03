@@ -414,140 +414,225 @@ export default {
     }
     return new Date(date).getTime() / 1000
   },
+  //   /**
+  // * @public
+  // * @function
+  // * @todo  初始化Code工具
+  // * @memberof Cain
+  // * @param {Object} http this.$http容器
+  // */
+  //   initHttp (http) {
+  //     this.$http = http
+  //   },
+  //   /**
+  // * @public
+  // * @function
+  // * @todo  获取字典表信息
+  // * @memberof Cain
+  // * @param {String} code 字典值
+  // */
+  //   getCode (code) {
+  //     return new Promise(async (resolve, reject) => {
+  //       let codeList = this.getParam('rootCodeList' + code)
+  //       if (this.isBlank(codeList)) {
+  //         const res = await this.$http.post('interface/getCode', { cdClass: code })
+  //         codeList = res.result
+  //         sessionStorage.setItem('rootCodeList' + code, JSON.stringify(codeList))
+  //       } else {
+  //         codeList = JSON.parse(codeList)
+  //       }
+  //       resolve(codeList)
+  //     })
+  //   },
+  //   /**
+  //   * @public
+  //   * @function
+  //   * @todo 通过openId获取用户信息（一次，不存储到SessionStorage）
+  //   * @memberof Cain
+  //   * @param {String} openId 如果有值就不从sessionStorage中取了
+  //   */
+  //   getUserInfoByOnce: function (userId) {
+  //     return this.getUserInfo({
+  //       isNotSave: true,
+  //       isRefersh: false,
+  //       userId: userId
+
+  //     })
+  //   },
+  //   /**
+  // * @public
+  // * @function
+  // * @todo 通过openId获取用户信息（存储并刷新SessionStorage）-- 一般用于JSP页面
+  // * @memberof Cain
+  // * @param {String} openId 如果有值就不从sessionStorage中取了
+  // */
+  //   getUserInfoByRefersh: function () {
+  //     return this.getUserInfo({
+  //       isNotSave: false,
+  //       isRefersh: true
+
+  //     })
+  //   },
+  //   /**
+  // * @public
+  // * @function
+  // * @todo 通过openId获取用户信息
+  // * @memberof Cain
+  // * @param {Boolean} isNotSave 是否关闭向Session中获取和存储
+  // * @param {Boolean} isRefersh 是否刷新sessionStorage
+  // * @param {String} openId 如果有值就不从sessionStorage中取了
+  // */
+  //   async getUserInfo (param) {
+  //     param = param || {}
+  //     var userId = param.userId || this.getParam('openId')
+  //     var flag = param.isNotSave || false
+  //     var isRefersh = param.isRefersh || false
+  //     var user = {}
+
+  //     if (isRefersh) {
+  //       user = await this._getUserInfo(userId, flag)
+  //     } else if (!flag && sessionStorage.getItem('userInfo')) {
+  //       user = JSON.parse(sessionStorage.getItem('userInfo'))
+  //     } else {
+  //       user = await this._getUserInfo(userId, flag)
+  //     }
+
+  //     return user
+  //   },
+  //   /**
+  // * @private
+  // * @function
+  // * @todo 通过openId获取用户信息私有
+  // * @memberof Cain
+  // * @param {Boolean} userId 用户ID
+  // * @param {Boolean} isRefersh 是否刷新sessionStorage
+  // */
+  //   _getUserInfo (userId, isNotSave) {
+  //     return new Promise(async (resolve, reject) => {
+  //       let user = await this.$http.post('/interface/getUserInfo', { userId: userId })
+  //       user = user.result[0]
+  //       if (!isNotSave) {
+  //         sessionStorage.setItem('userInfo', JSON.stringify(user))
+  //       }
+  //       resolve(user)
+  //     })
+  //   },
   /**
-* @public
-* @function
-* @todo  初始化Code工具
-* @memberof Cain
-* @param {Object} http this.$http容器
-*/
-  initHttp (http) {
-    this.$http = http
-  },
-  /**
-* @public
-* @function
-* @todo  获取字典表信息
-* @memberof Cain
-* @param {String} code 字典值
-*/
-  getCode (code) {
+   * @public
+   * @function
+   * @todo  初始化WX
+   * @memberof Cain
+   * @param {Object} httpWX 请求实例
+   */
+  getWeChatToken (httpWX) {
     return new Promise(async (resolve, reject) => {
-      let codeList = this.getParam('rootCodeList' + code)
-      if (this.isBlank(codeList)) {
-        const res = await this.$http.post('interface/getCode', { cdClass: code })
-        codeList = res.result
-        sessionStorage.setItem('rootCodeList' + code, JSON.stringify(codeList))
-      } else {
-        codeList = JSON.parse(codeList)
-      }
-      resolve(codeList)
+      let p = {}
+      p.u = location.origin + location.pathname
+      p.j = '"chooseImage","uploadImage","scanQRCode","openLocation","onMenuShareAppMessage","onMenuShareTimeline","closeWindow"'
+      // 'checkJsApi', 'previewImage', 'closeWindow', 'scanQRCode', 'previewImage', 'onMenuShareAppMessage', 'chooseWXPay', 'addCard', 'chooseCard', 'openCard'
+      const res = await httpWX.post('wxsr/getWXJSConfig', p)
+      let qqx = JSON.parse(res.data)
+      qqx.debug = false
+      wx.config(qqx)
+      wx.ready(() => {
+        resolve()
+      })
+      wx.error(() => {
+        reject(new Error('wxJSAPI Error!!!!!!'))
+      })
     })
   },
   /**
   * @public
   * @function
-  * @todo 通过openId获取用户信息（一次，不存储到SessionStorage）
+  * @todo  分享
   * @memberof Cain
-  * @param {String} openId 如果有值就不从sessionStorage中取了
+  * @param {Object} param
+  * @param {String} param.title 分享标题
+  * @param {String} param.desc 分享描述
+  * @param {String} param.icon 分享Icon
+  * @param {String} param.link 分享link
   */
-  getUserInfoByOnce: function (userId) {
-    return this.getUserInfo({
-      isNotSave: true,
-      isRefersh: false,
-      userId: userId
-
-    })
-  },
-  /**
-* @public
-* @function
-* @todo 通过openId获取用户信息（存储并刷新SessionStorage）-- 一般用于JSP页面
-* @memberof Cain
-* @param {String} openId 如果有值就不从sessionStorage中取了
-*/
-  getUserInfoByRefersh: function () {
-    return this.getUserInfo({
-      isNotSave: false,
-      isRefersh: true
-
-    })
-  },
-  /**
-* @public
-* @function
-* @todo 通过openId获取用户信息
-* @memberof Cain
-* @param {Boolean} isNotSave 是否关闭向Session中获取和存储
-* @param {Boolean} isRefersh 是否刷新sessionStorage
-* @param {String} openId 如果有值就不从sessionStorage中取了
-*/
-  async getUserInfo (param) {
-    param = param || {}
-    var userId = param.userId || this.getParam('openId')
-    var flag = param.isNotSave || false
-    var isRefersh = param.isRefersh || false
-    var user = {}
-
-    if (isRefersh) {
-      user = await this._getUserInfo(userId, flag)
-    } else if (!flag && sessionStorage.getItem('userInfo')) {
-      user = JSON.parse(sessionStorage.getItem('userInfo'))
-    } else {
-      user = await this._getUserInfo(userId, flag)
-    }
-
-    return user
-  },
-  /**
-* @private
-* @function
-* @todo 通过openId获取用户信息私有
-* @memberof Cain
-* @param {Boolean} userId 用户ID
-* @param {Boolean} isRefersh 是否刷新sessionStorage
-*/
-  _getUserInfo (userId, isNotSave) {
+  shareFormWeChat (param) {
     return new Promise(async (resolve, reject) => {
-      let user = await this.$http.post('/interface/getUserInfo', { userId: userId })
-      user = user.result[0]
-      if (!isNotSave) {
-        sessionStorage.setItem('userInfo', JSON.stringify(user))
+      if (this.isBlank(param)) {
+        param = {}
       }
-      resolve(user)
+      let shareTitle = param.title || '臻爱糖友社区'
+      let shareDesc = param.desc || document.title
+      if (shareDesc != null) {
+        shareDesc = shareDesc.substring(0, 80)
+      }
+
+      let ctx = window.location.protocol + '//' + window.location.host
+      let shareImage = param.icon || ctx + '/dcn/static/img/logo_share.jpg'
+      let shareLink = param.link || location.href
+
+      // 添加openid参数
+      if (shareLink != null && shareLink.indexOf('?') > 0) {
+        shareLink += '&'
+      } else {
+        shareLink += '?'
+      }
+
+      wx.onMenuShareAppMessage({
+        title: shareTitle, // 分享标题
+        desc: shareDesc, // 分享描述
+        link: shareLink, // 分享链接
+        imgUrl: shareImage, // 分享图标
+        type: '', // 分享类型,music、video或link，不填默认为link
+        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+        success: function () {
+          resolve()
+        },
+        cancel: function () {
+          reject(new Error('用户取消'))
+        }
+      })
+      wx.onMenuShareTimeline({
+        title: shareTitle, // 分享标题
+        link: shareLink, // 分享链接
+        imgUrl: shareImage, // 分享图标
+        success: function () {
+          resolve()
+        },
+        cancel: function () {
+          reject(new Error('用户取消'))
+        }
+      })
     })
   },
-  /**
-* @public
-* @function
-* @todo 获取微信Token信息
-* @memberof Cain
-* @return  promise对象
-*/
-  getWeChatToken: function ($http) {
-    return new Promise(async (resolve, reject) => {
-      var l = ['checkJsApi', 'previewImage', 'closeWindow', 'scanQRCode', 'previewImage', 'onMenuShareAppMessage', 'chooseWXPay', 'addCard', 'chooseCard', 'openCard']
-      //    l.splice(0, 0, 'checkJsApi');
-      let wechatNo = process.env.weChatNo
-      const res = await $http.post('/getJsSdkConfigParam.do', {
-        url: location.href.split('#')[0],
-        wechatNo,
-        type: 'jsapi'
-      })
-      const msg = res.data
-      wx.config({
-        debug: false,
-        appId: msg.appid,
-        timestamp: msg.timestamp,
-        nonceStr: msg.nonceStr,
-        signature: msg.signature,
-        jsApiList: l
-      })
-      wx.ready(function () {
-        resolve(msg)
-      })
-    })
-  },
+  //   /**
+  // * @public
+  // * @function
+  // * @todo 获取微信Token信息
+  // * @memberof Cain
+  // * @return  promise对象
+  // */
+  //   getWeChatToken: function ($http) {
+  //     return new Promise(async (resolve, reject) => {
+  //       var l = ['checkJsApi', 'previewImage', 'closeWindow', 'scanQRCode', 'previewImage', 'onMenuShareAppMessage', 'chooseWXPay', 'addCard', 'chooseCard', 'openCard']
+  //       //    l.splice(0, 0, 'checkJsApi');
+  //       let wechatNo = process.env.weChatNo
+  //       const res = await $http.post('/getJsSdkConfigParam.do', {
+  //         url: location.href.split('#')[0],
+  //         wechatNo,
+  //         type: 'jsapi'
+  //       })
+  //       const msg = res.data
+  //       wx.config({
+  //         debug: false,
+  //         appId: msg.appid,
+  //         timestamp: msg.timestamp,
+  //         nonceStr: msg.nonceStr,
+  //         signature: msg.signature,
+  //         jsApiList: l
+  //       })
+  //       wx.ready(function () {
+  //         resolve(msg)
+  //       })
+  //     })
+  //   },
   /**
 * @public
 * @function
